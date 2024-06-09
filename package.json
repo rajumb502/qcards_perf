@@ -2,10 +2,10 @@
   "name": "k6tests",
   "version": "1.0.0",
   "description": "",
-  "main": "script.js",
+  "main": "attendance.js",
   "scripts": {
-    "test": "k6 run -e ENVIRONMENT_NAME=development script.js",
-    "test:staging": "k6 run -e ENVIRONMENT_NAME=staging script.js "
+    "test": "k6 run -e ENVIRONMENT_NAME=development attendance.js",
+    "test:staging": "k6 run -e ENVIRONMENT_NAME=staging attendance.js "
   },
   "author": "",
   "license": "ISC",
