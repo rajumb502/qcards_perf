@@ -4,9 +4,12 @@
   "description": "",
   "main": "attendance.js",
   "scripts": {
-    "test": "k6 run -e ENVIRONMENT_NAME=development attendance.js",
-    "test:staging": "k6 run -e ENVIRONMENT_NAME=staging attendance.js "
+    "test:assessments": "node prepare-assessment-data.js --ENVIRONMENT_NAME=development && k6 run -e ENVIRONMENT_NAME=development assessment.js",
+    "test:assessments:staging": "k6 run -e ENVIRONMENT_NAME=staging assessment.js",
+    "test:attendances": "k6 run -e ENVIRONMENT_NAME=development attendance.js",
+    "test:attendances:staging": "k6 run -e ENVIRONMENT_NAME=staging attendance.js "
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "dependencies": {}
