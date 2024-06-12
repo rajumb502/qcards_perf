@@ -4,10 +4,8 @@ import { configurations } from "./config.js";
 import { csaAssessmentIds } from "./prepared_csa_ids.js";
 // import csaAssessmentIds from "./assessment_ids.json";
 export const options = {
-  // A number specifying the number of VUs to run concurrently.
-  vus: 1,
-  // A string specifying the total duration of the test run.
-  //duration: "1s",
+  vus: 10,
+  iterations: 10,
 };
 
 export default async function () {

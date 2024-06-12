@@ -5,7 +5,7 @@
   "main": "attendance.js",
   "scripts": {
     "test:assessments": "node prepare-assessment-data.js --ENVIRONMENT_NAME=development && k6 run -e ENVIRONMENT_NAME=development assessment.js",
-    "test:assessments:staging": "k6 run -e ENVIRONMENT_NAME=staging assessment.js",
+    "test:assessments:staging": "node prepare-assessment-data.js --ENVIRONMENT_NAME=staging && k6 run -e ENVIRONMENT_NAME=staging assessment.js",
     "test:attendances": "k6 run -e ENVIRONMENT_NAME=development attendance.js",
     "test:attendances:staging": "k6 run -e ENVIRONMENT_NAME=staging attendance.js "
   },
