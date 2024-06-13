@@ -4,8 +4,9 @@ import { configurations } from "./config.js";
 import { csaAssessmentIds } from "./prepared_csa_ids.js";
 // import csaAssessmentIds from "./assessment_ids.json";
 export const options = {
-  vus: 10,
-  iterations: 10,
+  vus: 1,
+  iterations: 1,
+  duration: "1h",
 };
 
 export default async function () {

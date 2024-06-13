@@ -4,10 +4,10 @@
   "description": "",
   "main": "attendance.js",
   "scripts": {
-    "test:assessments": "node prepare-assessment-data.js --ENVIRONMENT_NAME=development && k6 run -e ENVIRONMENT_NAME=development assessment.js",
-    "test:assessments:staging": "node prepare-assessment-data.js --ENVIRONMENT_NAME=staging && k6 run -e ENVIRONMENT_NAME=staging assessment.js",
-    "test:attendances": "k6 run -e ENVIRONMENT_NAME=development attendance.js",
-    "test:attendances:staging": "k6 run -e ENVIRONMENT_NAME=staging attendance.js "
+    "test:assessments": "node prepare-assessment-data.js --ENVIRONMENT_NAME=development && k6 run --out json=assessments_results.json -e ENVIRONMENT_NAME=development assessment.js",
+    "test:assessments:staging": "node prepare-assessment-data.js --ENVIRONMENT_NAME=staging && k6 run --out json=assessments_staging_results.json -e ENVIRONMENT_NAME=staging assessment.js",
+    "test:attendances": "k6 run --out json=attendance_results.json -e ENVIRONMENT_NAME=development attendance.js",
+    "test:attendances:staging": "k6 run --out json=attendance_staging_results.json -e ENVIRONMENT_NAME=staging attendance.js "
   },
   "type": "module",
   "author": "",

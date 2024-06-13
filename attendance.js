@@ -1,25 +1,13 @@
 import http from "k6/http";
+import exec from "k6/execution";
 import { check } from "k6";
+import { SharedArray } from "k6/data";
 import { configurations } from "./config.js";
-export const options = {
-  // A number specifying the number of VUs to run concurrently.
-  vus: 100,
-  // A string specifying the total duration of the test run.
-  // duration: "1s",
-};
 
-export default function () {
+const data = new SharedArray("attendance_dataset", function () {
+  const payloads = [];
   const { api_url, studentIds } = configurations[__ENV.ENVIRONMENT_NAME];
-  const url = api_url + "/attendances/submit";
-
-  const params = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    tags: { name: "SubmitAttendance" },
-  };
-
-  for (let id = 1; id <= 1000; id++) {
+  for (let id = 1; id <= 10; id++) {
     const today = new Date();
     today.setDate(today.getDate() + id);
     const epochDate = Math.floor(today.getTime() / 1000);
@@ -32,11 +20,43 @@ export default function () {
         attendance: "PRESENT",
       })),
     });
-    const res = http.post(url, payload, params);
-    check(res, {
-      "is status 200": (r) => r.status === 200,
-      "is success": (r) =>
-        r.body && res.json().submitManyAttendances.success === true,
-    });
+    payloads.push(payload);
   }
+
+  return payloads;
+});
+
+export const options = {
+  // A number specifying the number of VUs to run concurrently.
+  // vus: 1,
+  // A string specifying the total duration of the test run.
+  // duration: "1s",
+  scenarios: {
+    stress_test: {
+      executor: "per-vu-iterations",
+      vus: 6,
+      iterations: 1,
+      // maxDuration: "30s",
+    },
+  },
+};
+
+export default function () {
+  const payload = data[exec.scenario.iterationInTest];
+  const { api_url } = configurations[__ENV.ENVIRONMENT_NAME];
+  const url = api_url + "/attendances/submit";
+
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    tags: { name: "SubmitAttendance" },
+  };
+
+  const res = http.post(url, payload, params);
+  check(res, {
+    "is status 200": (r) => r.status === 200,
+    "is success": (r) =>
+      r.body && res.json().submitManyAttendances.success === true,
+  });
 }
