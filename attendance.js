@@ -1,13 +1,15 @@
 import http from "k6/http";
 import exec from "k6/execution";
-import { check } from "k6";
+import { check, sleep } from "k6";
 import { SharedArray } from "k6/data";
 import { configurations } from "./config.js";
+const numberOfDates = 100;
+const virtualUsers = 20;
 
 const data = new SharedArray("attendance_dataset", function () {
   const payloads = [];
-  const { api_url, studentIds } = configurations[__ENV.ENVIRONMENT_NAME];
-  for (let id = 1; id <= 10; id++) {
+  const { studentIds } = configurations[__ENV.ENVIRONMENT_NAME];
+  for (let id = 1; id <= numberOfDates; id++) {
     const today = new Date();
     today.setDate(today.getDate() + id);
     const epochDate = Math.floor(today.getTime() / 1000);
@@ -34,8 +36,8 @@ export const options = {
   scenarios: {
     stress_test: {
       executor: "per-vu-iterations",
-      vus: 6,
-      iterations: 1,
+      vus: virtualUsers,
+      iterations: Math.round(numberOfDates / virtualUsers),
       // maxDuration: "30s",
     },
   },
@@ -59,4 +61,5 @@ export default function () {
     "is success": (r) =>
       r.body && res.json().submitManyAttendances.success === true,
   });
+  sleep(1);
 }
