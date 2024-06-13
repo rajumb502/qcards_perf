@@ -7,9 +7,15 @@ export const configurations = {
       329, 330, 331, 332,
     ],
     api_url: "http://localhost:3000/api",
+    classIds: [1, 2],
+    subjectIds: [1],
+    questionIds: [1, 2, 3, 4],
   },
   staging: {
     studentIds: [],
     api_url: "https://staging.d2v5glybarfb34.amplifyapp.com/api",
+    classIds: [],
+    subjectIds: [],
+    questionIds: [],
   },
 };
