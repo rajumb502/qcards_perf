@@ -2,7 +2,7 @@ import { configurations } from "./config.js";
 import fs from "fs";
 
 export const prepareAssessmentData = async () => {
-  const fileName = "./prepared_csa_ids.js";
+  const fileName = "./prepared_csa_ids.json";
   let environment;
   /*
     Remove the Existing File of Assessment Ids
@@ -76,7 +76,7 @@ export const prepareAssessmentData = async () => {
    * and appends the resulting data to a file in JSON format.
    * The output is logged to the assessmentIds.json file with JSON entries are correctly formatted with commas and newlines.
    */
-  fs.appendFileSync(fileName, `export const csaAssessmentIds = [\n`);
+  fs.appendFileSync(fileName, `[\n`);
   for (let index = 0; index < classIds.length; index++) {
     const clsId = classIds[index];
     for (let subIndex = 0; subIndex < subjectIds.length; subIndex++) {

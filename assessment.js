@@ -3,19 +3,15 @@ import exec from "k6/execution";
 import { check, sleep } from "k6";
 import { SharedArray } from "k6/data";
 import { configurations } from "./config.js";
-import { csaAssessmentIds } from "./prepared_csa_ids.js";
 
-const numberOfCalls =
-  csaAssessmentIds.length *
-  configurations[__ENV.ENVIRONMENT_NAME].questionIds.length;
 const virtualUsers = 15;
-
+let numberOfIterations = 0;
 const data = new SharedArray("assessment_dataset", function () {
   const payloads = [];
   function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
-
+  const csaAssessmentIds = JSON.parse(open("./prepared_csa_ids.json"));
   const { studentIds, questionIds } = configurations[__ENV.ENVIRONMENT_NAME];
   const today = new Date();
   const epochDate = Math.floor(today.getTime() / 1000);
@@ -58,10 +54,14 @@ const data = new SharedArray("assessment_dataset", function () {
       payloads.push(payload);
     }
   }
+  const numberOfCalls =
+    csaAssessmentIds.length *
+    configurations[__ENV.ENVIRONMENT_NAME].questionIds.length;
+  numberOfIterations = Math.round(numberOfCalls / virtualUsers);
   console.log(
     payloads.length,
     "**** Pay load Length*******",
-    numberOfCalls,
+    numberOfIterations,
     virtualUsers
   );
   return payloads;
@@ -72,7 +72,7 @@ export const options = {
     stress_test: {
       executor: "per-vu-iterations",
       vus: virtualUsers,
-      iterations: Math.round(numberOfCalls / virtualUsers),
+      iterations: numberOfIterations,
       maxDuration: "30m",
     },
   },
