@@ -53,18 +53,6 @@ export const configurations = {
       "1039",
       "1040",
       "1041",
-      /*
-      "1042",
-      "1043",
-      "1044",
-      "1045",
-      "1046",
-      "1102",
-      "1103",
-      "1104",
-      "1105",
-      "1106",
-      "1107",*/
     ],
     api_url: "https://staging.d2v5glybarfb34.amplifyapp.com/api",
     classIds: [

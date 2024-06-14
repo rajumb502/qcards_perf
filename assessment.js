@@ -1,33 +1,24 @@
 import http from "k6/http";
-import { check } from "k6";
+import exec from "k6/execution";
+import { check, sleep } from "k6";
+import { SharedArray } from "k6/data";
 import { configurations } from "./config.js";
 import { csaAssessmentIds } from "./prepared_csa_ids.js";
-// import csaAssessmentIds from "./assessment_ids.json";
-export const options = {
-  vus: 1,
-  iterations: 1,
-  duration: "1h",
-};
 
-export default async function () {
-  const { api_url, studentIds, questionIds } =
-    configurations[__ENV.ENVIRONMENT_NAME];
-  const url = api_url + "/assessments/responses/submit";
+const numberOfCalls =
+  csaAssessmentIds.length *
+  configurations[__ENV.ENVIRONMENT_NAME].questionIds.length;
+const virtualUsers = 15;
+
+const data = new SharedArray("assessment_dataset", function () {
+  const payloads = [];
   function randomIntFromInterval(min, max) {
-    // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-  console.log("csaAssessmentIds", csaAssessmentIds);
-  const params = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    tags: { name: "SubmitAssessments" },
-  };
+  const { studentIds, questionIds } = configurations[__ENV.ENVIRONMENT_NAME];
   const today = new Date();
   const epochDate = Math.floor(today.getTime() / 1000);
-
   for (let id = 1; id <= csaAssessmentIds.length; id++) {
     const { assessmentId, csaId, classId, subjectId } =
       csaAssessmentIds[id - 1];
@@ -64,13 +55,44 @@ export default async function () {
       const payload = JSON.stringify({
         payload: assessmentSubmitPayload,
       });
-
-      const res = http.post(url, payload, params);
-      check(res, {
-        "is status 200": (r) => r.status === 200,
-        "is success": (r) =>
-          r.body && res.json().submitManyAssessmentResponses.success === true,
-      });
+      payloads.push(payload);
     }
   }
+  console.log(
+    payloads.length,
+    "**** Pay load Length*******",
+    numberOfCalls,
+    virtualUsers
+  );
+  return payloads;
+});
+
+export const options = {
+  scenarios: {
+    stress_test: {
+      executor: "per-vu-iterations",
+      vus: virtualUsers,
+      iterations: Math.round(numberOfCalls / virtualUsers),
+      maxDuration: "30m",
+    },
+  },
+};
+export default async function () {
+  const payload = data[exec.scenario.iterationInTest];
+  const { api_url } = configurations[__ENV.ENVIRONMENT_NAME];
+  const url = api_url + "/assessments/responses/submit";
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    tags: { name: "SubmitAssessments" },
+  };
+
+  const res = http.post(url, payload, params);
+  check(res, {
+    "is status 200": (r) => r.status === 200,
+    "is success": (r) =>
+      r.body && res.json().submitManyAssessmentResponses.success === true,
+  });
+  sleep(1);
 }

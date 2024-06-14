@@ -1,0 +1,6 @@
+delete from assessment_response_details ard where ard.assessment_response_id in (select id from assessment_responses ar where ar.assessment_id in (select id from assessments a where a.description = 'Performance Tests' and a.school_id = 1  ) );
+delete from assessment_responses ar where ar.assessment_id in (select id from assessments a where a.description = 'Performance Tests' and a.school_id = 1  );
+delete from class_subjects_assessments csa where csa.assessment_id in ( select id from assessments a where a.description = 'Performance Tests' and a.school_id = 1);
+delete from sections_questions sq where sq.section_id in (select id from assessment_sections as2 where as2.assessment_id in (select id from assessments a where a.description = 'Performance Tests' and a.school_id = 1));
+delete from assessment_sections as2 where as2.assessment_id in (select id from assessments a where a.description = 'Performance Tests' and a.school_id = 1);
+delete from assessments a where description = 'Performance Tests';
