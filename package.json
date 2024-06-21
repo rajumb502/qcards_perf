@@ -4,6 +4,7 @@
   "description": "",
   "main": "attendance.js",
   "scripts": {
+    "test:assessments:prepared": "k6 run --out json=_assessments_results.json -e ENVIRONMENT_NAME=staging assessment_prepared.js",
     "test:assessments": "node prepare-assessment-data.js --ENVIRONMENT_NAME=development && k6 run --out json=_assessments_results.json -e ENVIRONMENT_NAME=development assessment.js",
     "test:assessments:staging": "node prepare-assessment-data.js --ENVIRONMENT_NAME=staging && k6 run --out json=_assessments_staging_results.json -e ENVIRONMENT_NAME=staging assessment.js",
     "test:attendances": "k6 run --out json=_attendance_results.json -e ENVIRONMENT_NAME=development attendance.js",
